@@ -13,27 +13,27 @@ import java.util.Scanner;
 
 public class MySimpleProducer {
     public static void main(String[] args) {
-        KafkaSender<Integer, String> producer = createSender();
+        KafkaSender<String, String> producer = createSender();
         Scanner sc = new Scanner(System.in);
         String message;
         while (!(message = sc.nextLine()).equals("exit")) {
-            ProducerRecord<Integer, String> event = new ProducerRecord<>("messenger", 0, message);
-            SenderRecord<Integer, String, Long> r = SenderRecord.create(event,
+            ProducerRecord<String, String> event = new ProducerRecord<>("messenger", "yongqi", message);
+            SenderRecord<String, String, Long> r = SenderRecord.create(event,
                     System.currentTimeMillis()); // Time as the correlationMetadata
-            producer.send(Mono.just(r)).subscribe(System.out::println);
+            producer.send(Mono.just(r)).subscribe();
         }
         producer.close();
     }
 
-    public static KafkaSender<Integer, String> createSender() {
+    public static KafkaSender<String, String> createSender() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 "localhost:9092,localhost:9093,localhost:9094");
         props.put(ProducerConfig.CLIENT_ID_CONFIG,
                 "my-hello-producer");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        SenderOptions<Integer, String> senderOptions = SenderOptions.create(props);
+        SenderOptions<String, String> senderOptions = SenderOptions.create(props);
         return KafkaSender.create(senderOptions);
     }
 }

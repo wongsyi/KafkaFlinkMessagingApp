@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class MySimpleConsumer {
     public static void main(String[] args) {
-        KafkaReceiver<String, String> receiver = createReceiver("hello");
+        KafkaReceiver<String, String> receiver = createReceiver("messenger");
         receiver.receive().doOnNext(x -> {
             System.out.println(x.value());
             x.receiverOffset()
@@ -20,7 +20,7 @@ public class MySimpleConsumer {
     public static KafkaReceiver<String, String> createReceiver(String topic) {
         Properties p = new Properties();
         p.put(ConsumerConfig.CLIENT_ID_CONFIG,
-                "client1");
+                "client3");
         p.put(ConsumerConfig.GROUP_ID_CONFIG,
                 "group1");
         p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
