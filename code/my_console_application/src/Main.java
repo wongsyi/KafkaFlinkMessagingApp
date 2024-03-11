@@ -70,7 +70,7 @@ public class Main {
         p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                "latest"); //So that it wont redownload everything
+                "latest"); //So that it won't redownload everything
         p.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
                 "false");
         ReceiverOptions<String, String> receiverOptions = ReceiverOptions.create(p);
