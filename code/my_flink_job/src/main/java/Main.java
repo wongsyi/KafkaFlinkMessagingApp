@@ -1,4 +1,4 @@
-import function.FraudDetector;
+//import function.FraudDetector;
 import model.KafkaEvent;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
@@ -19,11 +19,11 @@ import java.time.Duration;
 
 public class Main {
     public static final String BOOTSTRAP_SERVERS = "kafka0:9094,kafka1:9094,kafka2:9092";
-    public static final String SOURCE_TOPIC = "user-balances";
-    public static final String SINK_TOPIC = "user-alerts";
+    public static final String SOURCE_TOPIC = "sender";
+    public static final String SINK_TOPIC = "receiver";
 
     public static void main(String[] args) throws Exception {
-        // user balances
+        // incoming messages
         KafkaSource<KafkaEvent> source = KafkaSource.<KafkaEvent>builder()
                 .setBootstrapServers(BOOTSTRAP_SERVERS)
                 .setTopics(SOURCE_TOPIC)
@@ -33,7 +33,7 @@ public class Main {
                 .setProperty("partition.discovery.interval.ms", "60000")
                 .build();
 
-        // fraud alert sink
+        // outgoing messages
         KafkaSink<KafkaEvent> sink = KafkaSink.<KafkaEvent>builder()
                 .setBootstrapServers(BOOTSTRAP_SERVERS)
                 .setRecordSerializer(new KafkaEventSerializer(SINK_TOPIC))
@@ -43,10 +43,10 @@ public class Main {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.fromSource(source, WatermarkStrategy.noWatermarks(), SOURCE_TOPIC)
-                .keyBy(x -> x.key)
-                .process(new FraudDetector())
+//                .keyBy(x -> x.key)
+//                .process(new FraudDetector())
                 .sinkTo(sink);
 
-        env.execute("Fraud Detector");
+        env.execute("Message Processor");
     }
 }

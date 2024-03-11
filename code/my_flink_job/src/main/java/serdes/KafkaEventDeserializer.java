@@ -6,15 +6,14 @@ import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDe
 
 import org.apache.flink.util.Collector;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.DoubleDeserializer;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.io.IOException;
 
 
 public class KafkaEventDeserializer implements KafkaRecordDeserializationSchema<KafkaEvent> {
-    public static IntegerDeserializer integerDeserializer = new IntegerDeserializer();
-    public static DoubleDeserializer doubleDeserializer = new DoubleDeserializer();
+    public static StringDeserializer keyDeserializer = new StringDeserializer();
+    public static StringDeserializer messageDeserializer = new StringDeserializer();
 
     public String topic;
 
@@ -30,8 +29,8 @@ public class KafkaEventDeserializer implements KafkaRecordDeserializationSchema<
 
     @Override
     public void deserialize(ConsumerRecord<byte[], byte[]> record, Collector<KafkaEvent> out) throws IOException {
-        int key = integerDeserializer.deserialize(topic, record.key());
-        double value = doubleDeserializer.deserialize(topic, record.value());
+        String key = keyDeserializer.deserialize(topic, record.key());
+        String value = messageDeserializer.deserialize(topic, record.value());
         long timestamp = record.timestamp();
         out.collect(new KafkaEvent(key, value, timestamp));
     }

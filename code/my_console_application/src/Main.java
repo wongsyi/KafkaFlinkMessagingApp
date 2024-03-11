@@ -28,7 +28,7 @@ public class Main {
             KafkaSender<String, String> producer = createSender();
             String message;
             while (!(message = sc.nextLine()).equals("exit")) {
-                ProducerRecord<String, String> event = new ProducerRecord<>("messenger", username, message);
+                ProducerRecord<String, String> event = new ProducerRecord<>("sender", username, message);
                 SenderRecord<String, String, Long> r = SenderRecord.create(event,
                         System.currentTimeMillis()); // Time as the correlation Metadata
                 producer.send(Mono.just(r)).subscribe();
@@ -36,7 +36,7 @@ public class Main {
             producer.close();
         } else if (mode.equals("receiver")) {
             System.out.println("Receiver mode");
-            KafkaReceiver<String, String> receiver = createReceiver("messenger", username);
+            KafkaReceiver<String, String> receiver = createReceiver("receiver", username);
             receiver.receive().filter(x-> x.key().equals(username))
                     .doOnNext(x -> {
                 String output = "(" + x.key() + ") " + x.value();
