@@ -37,7 +37,8 @@ public class Main {
         } else if (mode.equals("receiver")) {
             System.out.println("Receiver mode");
             KafkaReceiver<String, String> receiver = createReceiver("messenger", username);
-            receiver.receive().doOnNext(x -> {
+            receiver.receive().filter(x-> x.key().equals(username))
+                    .doOnNext(x -> {
                 String output = "(" + x.key() + ") " + x.value();
                 System.out.println(output);
                 x.receiverOffset()
