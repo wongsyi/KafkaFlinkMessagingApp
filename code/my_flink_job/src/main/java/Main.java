@@ -1,4 +1,5 @@
 //import function.FraudDetector;
+import function.MessageFilter;
 import model.KafkaEvent;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
@@ -6,6 +7,7 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -40,13 +42,16 @@ public class Main {
                 .setTransactionalIdPrefix("flink-alert")
                 .build();
 
+        //Start of tasks
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.fromSource(source, WatermarkStrategy.noWatermarks(), SOURCE_TOPIC)
+                .process(new MessageFilter())
 //                .keyBy(x -> x.key)
 //                .process(new FraudDetector())
                 .sinkTo(sink);
 
+        //End of tasks
         env.execute("Message Processor");
     }
 }
