@@ -17,12 +17,14 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        System.out.println("New version with receiver username");
         System.out.print("Open a send or receive window? [sender/receiver] > ");
         Scanner sc = new Scanner(System.in);
         String mode = sc.nextLine();
         System.out.print("Enter username: ");
         String username = sc.nextLine();
         if (mode.equals("sender")) {
+            System.out.println("sender mode");
             KafkaSender<String, String> producer = createSender();
             String message;
             while (!(message = sc.nextLine()).equals("exit")) {
@@ -33,7 +35,8 @@ public class Main {
             }
             producer.close();
         } else if (mode.equals("receiver")) {
-            KafkaReceiver<String, String> receiver = createReceiver("messenger");
+            System.out.println("Receiver mode");
+            KafkaReceiver<String, String> receiver = createReceiver("messenger", username);
             receiver.receive().doOnNext(x -> {
                 String output = "(" + x.key() + ") " + x.value();
                 System.out.println(output);
@@ -56,18 +59,18 @@ public class Main {
         return KafkaSender.create(senderOptions);
     }
 
-    public static KafkaReceiver<String, String> createReceiver(String topic) {
+    public static KafkaReceiver<String, String> createReceiver(String topic, String username) {
         Properties p = new Properties();
         p.put(ConsumerConfig.CLIENT_ID_CONFIG,
-                "client2");
+                username);
         p.put(ConsumerConfig.GROUP_ID_CONFIG,
-                "group2");
+                username);
         p.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 "localhost:9092,localhost:9093,localhost:9094");
         p.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         p.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                "latest");
+                "latest"); //So that it wont redownload everything
         p.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
                 "false");
         ReceiverOptions<String, String> receiverOptions = ReceiverOptions.create(p);
