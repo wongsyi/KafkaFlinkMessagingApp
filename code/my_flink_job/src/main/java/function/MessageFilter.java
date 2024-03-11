@@ -42,6 +42,11 @@ public class MessageFilter extends KeyedProcessFunction<String, KafkaEvent, Kafk
             if (words.length > 1) { // Check if the message is in the appropriate format
                 NewKey = words[0];  // First word is the name of the receiver
 
+                // Sender
+                sb.append("(");
+                sb.append(SenderKey);
+                sb.append(") ");
+
                 // Q3 Profanities in messages are censored.
                 for (int i = 1; i < words.length; i++) { //Check each word is vulgar or not
                     if (vulgarWords.contains(words[i].toLowerCase())) { //Case folding and replace vulgar words with '*'
