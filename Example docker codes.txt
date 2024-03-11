@@ -1,0 +1,5 @@
+// Create topics in Kafka
+kafka-topics.sh  --create --replication-factor 2 --partitions 3 --bootstrap-server kafka0:9094 --topic hello
+
+// To view the messages in Kafka queue
+kafka-console-consumer.sh --bootstrap-server kafka0:9094 --topic messenger
